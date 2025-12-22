@@ -4,7 +4,11 @@ pipeline {
     tools {
         maven 'Maven'  
     }
-
+	
+	environment {
+        SONAR_TOKEN = credentials('sonar-token')  
+    }
+	
     stages {
         stage('Detect Changed Apps') {
             steps {
@@ -26,6 +30,31 @@ pipeline {
 
                     env.CHANGED_APPS = changedApps.join(',')
                     echo "Изменённые приложения: ${env.CHANGED_APPS}"
+                }
+            }
+        }
+
+		stage('SonarQube Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQube') {  
+                        bat '''
+                            mvn clean verify sonar:sonar ^
+                                -Dsonar.projectKey=my-java-apps ^
+                                -Dsonar.host.url=http://localhost:9000 ^
+                                -Dsonar.login=%SONAR_TOKEN%
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    timeout(time: 5, unit: 'MINUTES') {
+                        waitForQualityGate abortPipeline: true
+                    }
                 }
             }
         }
