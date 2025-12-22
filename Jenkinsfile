@@ -1,11 +1,14 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven'  
+    }
+
     stages {
         stage('Detect Changed Apps') {
             steps {
                 script {
-                    
                     def changedFiles = bat(script: "git diff --name-only HEAD~1 || echo ''", returnStdout: true).trim().split('\n')
 
                     def apps = ['HelloWorld', 'HelloJenkins', 'HelloDevops']
