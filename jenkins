@@ -5,37 +5,33 @@ pipeline {
         stage('Detect Changed Apps') {
             steps {
                 script {
-                    
-                    def changedFiles = sh(script: "git diff --name-only HEAD~1", returnStdout: true).trim().split('\n')
+                   
+                    def changedFiles = sh(script: "git diff --name-only HEAD~1 || echo ''", returnStdout: true).trim().split('\n')
 
-                  
                     def apps = ['HelloWorld', 'HelloJenkins', 'HelloDevops']
                     def changedApps = []
 
                     apps.each { app ->
-                        if (changedFiles.any { it.startsWith(app + '/') }) {
+                        if (changedFiles.any { it.startsWith("${app}/") }) {
                             changedApps << app
                         }
                     }
 
-                    
+                   
                     if (changedApps.isEmpty()) {
                         changedApps = apps
                     }
 
-                  
                     env.CHANGED_APPS = changedApps.join(',')
                     echo "Изменённые приложения: ${env.CHANGED_APPS}"
                 }
             }
         }
 
-        stage('Build & Test & Deploy') {
+        stage('Build & Run') {
             parallel {
                 stage('HelloWorld') {
-                    when {
-                        expression { env.CHANGED_APPS.contains('HelloWorld') }
-                    }
+                    when { expression { env.CHANGED_APPS.contains('HelloWorld') } }
                     steps {
                         dir('HelloWorld') {
                             echo "=== Сборка HelloWorld ==="
@@ -46,9 +42,7 @@ pipeline {
                     }
                 }
                 stage('HelloJenkins') {
-                    when {
-                        expression { env.CHANGED_APPS.contains('HelloJenkins') }
-                    }
+                    when { expression { env.CHANGED_APPS.contains('HelloJenkins') } }
                     steps {
                         dir('HelloJenkins') {
                             echo "=== Сборка HelloJenkins ==="
@@ -59,9 +53,7 @@ pipeline {
                     }
                 }
                 stage('HelloDevops') {
-                    when {
-                        expression { env.CHANGED_APPS.contains('HelloDevops') }
-                    }
+                    when { expression { env.CHANGED_APPS.contains('HelloDevops') } }
                     steps {
                         dir('HelloDevops') {
                             echo "=== Сборка HelloDevops ==="
