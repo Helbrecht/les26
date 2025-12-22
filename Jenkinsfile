@@ -5,8 +5,8 @@ pipeline {
         stage('Detect Changed Apps') {
             steps {
                 script {
-                   
-                    def changedFiles = sh(script: "git diff --name-only HEAD~1 || echo ''", returnStdout: true).trim().split('\n')
+                    
+                    def changedFiles = bat(script: "git diff --name-only HEAD~1 || echo ''", returnStdout: true).trim().split('\n')
 
                     def apps = ['HelloWorld', 'HelloJenkins', 'HelloDevops']
                     def changedApps = []
@@ -17,7 +17,6 @@ pipeline {
                         }
                     }
 
-                   
                     if (changedApps.isEmpty()) {
                         changedApps = apps
                     }
@@ -35,9 +34,9 @@ pipeline {
                     steps {
                         dir('HelloWorld') {
                             echo "=== Сборка HelloWorld ==="
-                            sh 'mvn clean package'
+                            bat 'mvn clean package'
                             echo "=== Запуск HelloWorld ==="
-                            sh 'java -jar target/hello-app-1.0-SNAPSHOT.jar'
+                            bat 'java -jar target/hello-app-1.0-SNAPSHOT.jar'
                         }
                     }
                 }
@@ -46,9 +45,9 @@ pipeline {
                     steps {
                         dir('HelloJenkins') {
                             echo "=== Сборка HelloJenkins ==="
-                            sh 'mvn clean package'
+                            bat 'mvn clean package'
                             echo "=== Запуск HelloJenkins ==="
-                            sh 'java -jar target/hello-app-1.0-SNAPSHOT.jar'
+                            bat 'java -jar target/hello-app-1.0-SNAPSHOT.jar'
                         }
                     }
                 }
@@ -57,9 +56,9 @@ pipeline {
                     steps {
                         dir('HelloDevops') {
                             echo "=== Сборка HelloDevops ==="
-                            sh 'mvn clean package'
+                            bat 'mvn clean package'
                             echo "=== Запуск HelloDevops ==="
-                            sh 'java -jar target/hello-app-1.0-SNAPSHOT.jar'
+                            bat 'java -jar target/hello-app-1.0-SNAPSHOT.jar'
                         }
                     }
                 }
