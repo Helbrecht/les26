@@ -35,7 +35,7 @@ pipeline {
                 stage('HelloWorld') {
                     when { expression { env.CHANGED_APPS.contains('HelloWorld') } }
                     steps {
-                        dir('HelloWorld') {
+                        dir('HW') {
                             echo "=== Сборка HelloWorld ==="
                             bat 'mvn clean package'
                             echo "=== Запуск HelloWorld ==="
@@ -46,7 +46,7 @@ pipeline {
                 stage('HelloJenkins') {
                     when { expression { env.CHANGED_APPS.contains('HelloJenkins') } }
                     steps {
-                        dir('HelloJenkins') {
+                        dir('HJ') {
                             echo "=== Сборка HelloJenkins ==="
                             bat 'mvn clean package'
                             echo "=== Запуск HelloJenkins ==="
@@ -54,7 +54,7 @@ pipeline {
                         }
                     }
                 }
-                stage('HelloDevops') {
+                stage('HD') {
                     when { expression { env.CHANGED_APPS.contains('HelloDevops') } }
                     steps {
                         dir('HelloDevops') {
