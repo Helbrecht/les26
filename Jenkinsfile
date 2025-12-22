@@ -37,13 +37,16 @@ pipeline {
 		stage('SonarQube Analysis') {
             steps {
                 script {
-                    withSonarQubeEnv('SonarQube') {  
-                        bat '''
-                            mvn clean verify sonar:sonar ^
-                                -Dsonar.projectKey=my-java-apps ^
-                                -Dsonar.host.url=http://localhost:9000 ^
-                                -Dsonar.login=%SONAR_TOKEN%
-                        '''
+                    withSonarQubeEnv('SonarQube') {
+                        dir('HelloWorld') {
+                            bat 'mvn clean verify sonar:sonar -Dsonar.projectKey=my-java-apps -Dsonar.projectName="HelloWorld"'
+                        }
+                        dir('HelloJenkins') {
+                            bat 'mvn clean verify sonar:sonar -Dsonar.projectKey=my-java-apps -Dsonar.projectName="HelloJenkins"'
+                        }
+                        dir('HelloDevops') {
+                            bat 'mvn clean verify sonar:sonar -Dsonar.projectKey=my-java-apps -Dsonar.projectName="HelloDevops"'
+                        }
                     }
                 }
             }
