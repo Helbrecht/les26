@@ -54,11 +54,31 @@ pipeline {
                 }
             }
         }
-
+		
+		stage('SonarQube Analysis') {
+    steps {
+        withSonarQubeEnv('SonarQube') {
+            script {
+                def appsToAnalyze = env.CHANGED_APPS.split(',')
+                appsToAnalyze.each { app ->
+                    dir(app) {
+                        def sonarResult = bat(script: 'mvn clean verify sonar:sonar -Dsonar.projectKey=my-java-apps -Dsonar.projectName="${app}"', returnStdout: true)
+                        echo sonarResult
+                       
+                        def taskUrl = (sonarResult =~ /http:\/\/localhost:9000\/api\/ce\/task\\?id=([A-Za-z0-9]+)/)
+                        if (taskUrl) {
+                            echo "Ссылка на задачу SonarQube: http://localhost:9000/dashboard?id=my-java-apps#sonarqube-task=${taskUrl[0][1]}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
         stage('Quality Gate') {
             steps {
                 script {
-                    timeout(time: 10, unit: 'MINUTES') {
+                    timeout(time: 20, unit: 'MINUTES') {
                         waitForQualityGate abortPipeline: true
                     }
                 }
