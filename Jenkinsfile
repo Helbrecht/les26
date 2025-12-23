@@ -36,6 +36,8 @@ pipeline {
 
 		stage('SonarQube Analysis') {
             steps {
+				retry(3) {
+				sleep(time: 60, unit: 'SECONDS')
                 script {
                     withSonarQubeEnv('SonarQube') {
                         dir('HelloWorld') {
@@ -48,6 +50,7 @@ pipeline {
                             bat 'mvn clean verify sonar:sonar -Dsonar.projectKey=my-java-apps -Dsonar.projectName="HelloDevops"'
                         }
                     }
+					}
                 }
             }
         }
@@ -55,7 +58,7 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 script {
-                    timeout(time: 5, unit: 'MINUTES') {
+                    timeout(time: 10, unit: 'MINUTES') {
                         waitForQualityGate abortPipeline: true
                     }
                 }
