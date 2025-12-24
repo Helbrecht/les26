@@ -58,6 +58,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/hello-${{ matrix.app }}:latest
+          tags: ghcr.io/${{ github.repository_owner }}/hello-${{ lower(matrix.app) }}:latest
           build-args: |
             APP_NAME=${{ matrix.app }}
