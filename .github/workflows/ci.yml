@@ -46,6 +46,9 @@ jobs:
           name: ${{ matrix.app }}-jar
           path: ${{ matrix.app }}/target/hello-app-1.0-SNAPSHOT.jar
 
+      - name: Set lowercase app name
+        run: echo "APP_LOWER=$(echo ${{ matrix.app }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -58,6 +61,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/hello-${{ lower(matrix.app) }}:latest
+          tags: ghcr.io/${{ github.repository_owner }}/hello-${{ env.APP_LOWER }}:latest
           build-args: |
             APP_NAME=${{ matrix.app }}
